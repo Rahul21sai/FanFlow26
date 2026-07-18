@@ -1,0 +1,112 @@
+{
+  "app": {
+    "title": "FanFlow26",
+    "subtitle": "Your smart stadium companion",
+    "tagline": "GenAI Stadium Assistant for FIFA World Cup 2026"
+  },
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "assistant": "Assistant",
+    "ops": "Ops",
+    "profile": "Profile"
+  },
+  "onboarding": {
+    "selectLanguage": "Select Language",
+    "continueGuest": "Continue as Guest",
+    "signIn": "Sign in",
+    "welcome": "Welcome to FanFlow26"
+  },
+  "dashboard": {
+    "welcome": "Welcome, Fan!",
+    "readyMessage": "Ready for an exciting match day.",
+    "quickActions": "Quick Actions",
+    "navigate": "Navigate",
+    "askAssistant": "Ask Assistant",
+    "facilities": "Facilities",
+    "mySeat": "My Seat",
+    "accessibility": "Accessibility",
+    "liveUpcoming": "Live Upcoming",
+    "kickoff": "Kickoff",
+    "vs": "VS",
+    "moderateCrowd": "Moderate Crowd Density",
+    "merchOpen": "Merch Store Open",
+    "merchSubtitle": "Beat the queues! Visit the East Gate store before 16:00."
+  },
+  "map": {
+    "title": "Stadium Map",
+    "findExit": "Find nearest exit",
+    "findRestroom": "Find restroom",
+    "findMedical": "Find medical",
+    "routeTo": "Route to {{destination}}",
+    "endRoute": "End Route",
+    "step": "Step {{number}}",
+    "mins": "{{count}} mins",
+    "crowdOverlay": "Crowd Density Overlay"
+  },
+  "assistant": {
+    "title": "AI Assistant",
+    "placeholder": "Ask me anything...",
+    "send": "Send",
+    "welcomeMessage": "Welcome to FanFlow26 AI! How can I help you today at the stadium?",
+    "typing": "FanFlow AI is typing...",
+    "nearestExit": "Where's the nearest exit?",
+    "reportSpill": "Report a spill",
+    "vegetarianFood": "Vegetarian food?",
+    "aiLabel": "FanFlow AI",
+    "you": "You",
+    "read": "Read",
+    "preMatch": "Pre-Match",
+    "today": "Today"
+  },
+  "ops": {
+    "title": "Operations Center",
+    "liveDashboard": "Live Dashboard",
+    "liveSync": "Live Sync: Active",
+    "aiSuggestion": "AI Suggestion",
+    "actionRequired": "Action Required",
+    "execute": "Execute Reroute",
+    "dismiss": "Dismiss",
+    "criticalAlert": "Critical Alert",
+    "viewCamera": "View Camera",
+    "densityOverview": "Density Overview",
+    "fullMap": "Full Map",
+    "incidentFeed": "Live Incident Feed",
+    "filter": "Filter",
+    "dispatched": "Dispatched",
+    "monitoring": "Monitoring"
+  },
+  "accessibility": {
+    "title": "Accessibility Mode",
+    "subtitle": "Customize your stadium experience.",
+    "preferences": "Preferences",
+    "highContrast": "High Contrast",
+    "largeText": "Large Text",
+    "wheelchairRouting": "Wheelchair Routing",
+    "screenReader": "Screen-reader Optimized",
+    "nearestFacilities": "Nearest Accessible Facilities",
+    "refresh": "Refresh",
+    "getDirections": "Get directions",
+    "level": "Level {{number}}"
+  },
+  "density": {
+    "low": "Low",
+    "moderate": "Moderate",
+    "high": "High",
+    "critical": "Critical"
+  },
+  "errors": {
+    "genericError": "Something went wrong. Please try again.",
+    "networkError": "Network error. Check your connection.",
+    "aiUnavailable": "AI assistant is temporarily unavailable."
+  },
+  "common": {
+    "loading": "Loading...",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back",
+    "close": "Close",
+    "menu": "Menu"
+  }
+}

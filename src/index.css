@@ -1,0 +1,159 @@
+
+@import "tailwindcss";
+
+/* ─── CSS Custom Properties (Design Tokens) ───────────────────── */
+:root {
+  --color-primary: #00543b;
+  --color-primary-container: #0b6e4f;
+  --color-on-primary: #ffffff;
+  --color-secondary: #835500;
+  --color-secondary-container: #feae2c;
+  --color-surface: #F8F9FA;
+  --color-surface-variant: #f0eded;
+  --color-background: #fcf9f8;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #3f4943;
+  --color-outline: #6f7a73;
+  --color-outline-variant: #bec9c1;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-danger: #DC3545;
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+}
+
+/* ─── Global Resets ───────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+/* ─── Tailwind Theme Extension via @theme ─────────────────────── */
+@theme {
+  --color-primary: #00543b;
+  --color-primary-container: #0b6e4f;
+  --color-secondary: #835500;
+  --color-secondary-container: #feae2c;
+  --color-surface: #F8F9FA;
+  --color-background: #fcf9f8;
+  --color-on-surface: #1c1b1b;
+  --color-on-surface-variant: #3f4943;
+  --color-outline: #6f7a73;
+  --color-outline-variant: #bec9c1;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-danger: #DC3545;
+}
+
+/* ─── Glassmorphism Utility ───────────────────────────────────── */
+.glass-panel {
+  background: rgba(248, 249, 250, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+/* ─── Scrollbar Utilities ─────────────────────────────────────── */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Accessibility High Contrast Mode ────────────────────────── */
+.contrast-high {
+  --color-on-surface: #000000;
+  --color-on-surface-variant: #111111;
+  --color-outline: #333333;
+  --color-outline-variant: #555555;
+}
+
+.contrast-high * {
+  border-color: currentColor !important;
+}
+
+.contrast-high .glass-panel {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* ─── Focus Styles (Accessibility) ────────────────────────────── */
+:focus-visible {
+  outline: 3px solid #0066CC;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Animations ──────────────────────────────────────────────── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─── Reduced Motion ──────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Touch Target Compliance ─────────────────────────────────── */
+button, a, input, select, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
