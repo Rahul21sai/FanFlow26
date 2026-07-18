@@ -86,7 +86,7 @@ export function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   return (
     <nav
       id="bottom-nav"
-      className="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 h-20 bg-white/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
+      className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-4 pt-2 h-20 bg-white/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
       role="navigation"
       aria-label="Main Navigation"
     >

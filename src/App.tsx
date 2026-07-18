@@ -96,6 +96,7 @@ function App() {
   return (
     <div className={appClasses} style={{ fontFamily: 'Inter, sans-serif' }}>
       <AppHeader
+        onMenuClick={() => setCurrentView(AppView.DASHBOARD)}
         onAccessibilityClick={() => setCurrentView(AppView.ACCESSIBILITY)}
       />
 
