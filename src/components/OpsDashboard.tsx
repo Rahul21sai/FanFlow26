@@ -26,6 +26,12 @@ export interface OpsDashboardProps {
 export function OpsDashboard({ crowdData }: OpsDashboardProps) {
   const { t } = useTranslation();
   const [dismissed, setDismissed] = useState(false);
+  const [toast, setToast] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 3000);
+  };
 
   // Simulated incidents
   const incidents: Incident[] = [
@@ -88,7 +94,7 @@ export function OpsDashboard({ crowdData }: OpsDashboardProps) {
               </div>
             </div>
             <div className="mt-4 flex gap-3 z-10 relative">
-              <button id="btn-execute-reroute" className="bg-[#00543b] text-white text-sm font-semibold px-6 py-3 rounded-lg hover:bg-[#005139] transition-colors active:scale-95 min-w-[44px] min-h-[44px]">
+              <button id="btn-execute-reroute" onClick={() => { setDismissed(true); showToast('✅ Reroute executed — Gate D traffic redirected to Gate A'); }} className="bg-[#00543b] text-white text-sm font-semibold px-6 py-3 rounded-lg hover:bg-[#005139] transition-colors active:scale-95 min-w-[44px] min-h-[44px]">
                 {t('ops.execute')}
               </button>
               <button id="btn-dismiss" onClick={() => setDismissed(true)} className="bg-transparent border border-[#6f7a73] text-[#1c1b1b] text-sm font-semibold px-6 py-3 rounded-lg hover:bg-[#f0eded] transition-colors active:scale-95 min-w-[44px] min-h-[44px]">
@@ -113,7 +119,7 @@ export function OpsDashboard({ crowdData }: OpsDashboardProps) {
             </div>
           </div>
           <div className="mt-auto pt-2">
-            <button id="btn-view-camera" className="w-full bg-[#ba1a1a] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#93000a] transition-colors min-h-[44px] flex items-center justify-center gap-2">
+            <button id="btn-view-camera" onClick={() => showToast('📹 Camera feed loading — Gate D (live)')} className="w-full bg-[#ba1a1a] text-white text-sm font-semibold py-2.5 rounded-lg hover:bg-[#93000a] transition-colors min-h-[44px] flex items-center justify-center gap-2">
               <span>{t('ops.viewCamera')}</span>
               <span className="material-symbols-outlined text-sm">videocam</span>
             </button>
@@ -124,7 +130,7 @@ export function OpsDashboard({ crowdData }: OpsDashboardProps) {
         <section className="col-span-1 md:col-span-6 bg-[#F8F9FA] rounded-xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#bec9c1]">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-sm font-semibold text-[#1c1b1b] uppercase tracking-wider">{t('ops.densityOverview')}</h3>
-            <button className="text-[#00543b] text-xs font-medium hover:underline min-w-[44px] min-h-[44px] flex items-center">{t('ops.fullMap')}</button>
+            <button onClick={() => showToast('Opening full density map...')} className="text-[#00543b] text-xs font-medium hover:underline min-w-[44px] min-h-[44px] flex items-center">{t('ops.fullMap')}</button>
           </div>
           <div className="space-y-4">
             {keyZones.map((zone) => {
@@ -201,6 +207,13 @@ export function OpsDashboard({ crowdData }: OpsDashboardProps) {
           </div>
         </section>
       </div>
+
+      {/* Toast notification */}
+      {toast && (
+        <div className="fixed bottom-28 left-1/2 -translate-x-1/2 z-50 bg-[#1c1b1b] text-white text-sm font-medium px-5 py-3 rounded-xl shadow-lg animate-[slideUp_0.3s_ease-out] max-w-[90%] text-center">
+          {toast}
+        </div>
+      )}
     </main>
   );
 }

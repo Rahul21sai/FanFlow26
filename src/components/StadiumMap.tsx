@@ -40,6 +40,7 @@ export function StadiumMap({
 }: StadiumMapProps) {
   const { t } = useTranslation();
   const [hoveredZone, setHoveredZone] = useState<string | null>(null);
+  const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
   const getDensityFill = (zoneId: string): string => {
     const data = crowdData.get(zoneId);
@@ -53,11 +54,35 @@ export function StadiumMap({
 
   const routeZones = activeRoute ? new Set(activeRoute.steps.map((s) => s.zoneId)) : new Set<string>();
 
+  const handleZoneClick = (zoneId: string) => {
+    setSelectedZone(zoneId);
+    onZoneClick(zoneId);
+  };
+
   return (
-    <main className="flex-1 relative mt-16 mb-20 overflow-hidden" style={{ fontFamily: 'Inter, sans-serif' }}>
-      {/* Map Background */}
-      <div className="absolute inset-0 bg-[#f0eded]">
-        <svg viewBox="0 0 400 420" className="w-full h-full" role="img" aria-label="Stadium Map">
+    <main className="pt-20 pb-24 px-4 md:px-8 max-w-[1200px] mx-auto w-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+      {/* Quick Action Chips */}
+      <div className="flex gap-2 overflow-x-auto pb-3 mb-4 scrollbar-hide">
+        {[
+          { type: FacilityType.EXIT, icon: 'exit_to_app', label: t('map.findExit') },
+          { type: FacilityType.RESTROOM, icon: 'wc', label: t('map.findRestroom') },
+          { type: FacilityType.MEDICAL, icon: 'local_hospital', label: t('map.findMedical') },
+        ].map((btn) => (
+          <button
+            key={btn.type}
+            id={`find-${btn.type.toLowerCase()}`}
+            onClick={() => onFindFacility(btn.type)}
+            className="shrink-0 flex items-center gap-1.5 bg-white/95 backdrop-blur-md text-[#1c1b1b] border border-[#bec9c1] rounded-full px-4 py-2.5 text-sm font-semibold shadow-sm min-h-[44px] hover:bg-[#eae7e7] hover:border-[#00543b] transition-colors active:scale-95"
+          >
+            <span className="material-symbols-outlined text-xl text-[#00543b]">{btn.icon}</span>
+            {btn.label}
+          </button>
+        ))}
+      </div>
+
+      {/* SVG Map Container */}
+      <div className="bg-[#f0eded] rounded-2xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-[#bec9c1]/30 relative">
+        <svg viewBox="0 0 400 420" className="w-full" role="img" aria-label="Stadium Map">
           {/* Stadium outline */}
           <ellipse cx="200" cy="210" rx="190" ry="200" fill="#e5e2e1" stroke="#bec9c1" strokeWidth="2" />
           <ellipse cx="200" cy="210" rx="170" ry="180" fill="#f6f3f2" stroke="#bec9c1" strokeWidth="1" />
@@ -68,10 +93,10 @@ export function StadiumMap({
               <path
                 d={zone.svgPath}
                 fill={routeZones.has(zone.id) ? 'rgba(0, 84, 59, 0.4)' : getDensityFill(zone.id)}
-                stroke={hoveredZone === zone.id ? '#00543b' : '#6f7a73'}
-                strokeWidth={hoveredZone === zone.id ? 2.5 : 1}
+                stroke={hoveredZone === zone.id || selectedZone === zone.id ? '#00543b' : '#6f7a73'}
+                strokeWidth={hoveredZone === zone.id || selectedZone === zone.id ? 2.5 : 1}
                 className="cursor-pointer transition-all duration-200"
-                onClick={() => onZoneClick(zone.id)}
+                onClick={() => handleZoneClick(zone.id)}
                 onMouseEnter={() => setHoveredZone(zone.id)}
                 onMouseLeave={() => setHoveredZone(null)}
                 role="button"
@@ -142,48 +167,56 @@ export function StadiumMap({
             </g>
           )}
         </svg>
+
+        {/* Tooltip for hovered zone */}
+        {hoveredZone && (() => {
+          const zone = STADIUM_ZONES.find((z) => z.id === hoveredZone);
+          const data = crowdData.get(hoveredZone);
+          if (!zone) return null;
+          return (
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 bg-white/95 backdrop-blur-md rounded-xl px-4 py-3 shadow-lg border border-[#bec9c1]/30 text-center pointer-events-none">
+              <p className="text-sm font-semibold text-[#1c1b1b]">{zone.name}</p>
+              {data && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className={`inline-block w-2 h-2 rounded-full ${getDensityBgColor(data.density)}`} />
+                  <span className="text-xs text-[#3f4943]">{getDensityLabel(data.density)} — {formatPercentage(data.percentage)}</span>
+                </div>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
-      {/* Quick Action Chips */}
-      <div className="absolute top-4 left-4 right-4 flex gap-2 overflow-x-auto pb-2 z-10 scrollbar-hide">
-        {[
-          { type: FacilityType.EXIT, icon: 'exit_to_app', label: t('map.findExit') },
-          { type: FacilityType.RESTROOM, icon: 'wc', label: t('map.findRestroom') },
-          { type: FacilityType.MEDICAL, icon: 'local_hospital', label: t('map.findMedical') },
-        ].map((btn) => (
-          <button
-            key={btn.type}
-            id={`find-${btn.type.toLowerCase()}`}
-            onClick={() => onFindFacility(btn.type)}
-            className="shrink-0 flex items-center gap-1 bg-white/95 backdrop-blur-md text-[#1c1b1b] border border-[#bec9c1] rounded-full px-4 py-2 text-sm font-semibold shadow-sm min-h-[44px] hover:bg-[#eae7e7] transition-colors"
-          >
-            <span className="material-symbols-outlined text-xl">{btn.icon}</span>
-            {btn.label}
-          </button>
-        ))}
+      {/* Map Legend */}
+      <div className="mt-4 flex flex-wrap gap-4 justify-center text-xs text-[#3f4943]">
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-[rgba(40,167,69,0.5)]" />
+          <span>Low (&lt;40%)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-[rgba(255,193,7,0.55)]" />
+          <span>Moderate (40-70%)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-[rgba(220,53,69,0.55)]" />
+          <span>High (70-90%)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded-full bg-[rgba(186,26,26,0.65)]" />
+          <span>Critical (&gt;90%)</span>
+        </div>
       </div>
 
-      {/* Tooltip for hovered zone */}
-      {hoveredZone && (() => {
-        const zone = STADIUM_ZONES.find((z) => z.id === hoveredZone);
-        const data = crowdData.get(hoveredZone);
-        if (!zone) return null;
-        return (
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 bg-white/95 backdrop-blur-md rounded-xl px-4 py-3 shadow-lg border border-[#bec9c1]/30 text-center pointer-events-none">
-            <p className="text-sm font-semibold text-[#1c1b1b]">{zone.name}</p>
-            {data && (
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`inline-block w-2 h-2 rounded-full ${getDensityBgColor(data.density)}`} />
-                <span className="text-xs text-[#3f4943]">{getDensityLabel(data.density)} — {formatPercentage(data.percentage)}</span>
-              </div>
-            )}
-          </div>
-        );
-      })()}
+      {/* Instruction text */}
+      {!activeRoute && (
+        <p className="text-center text-sm text-[#6f7a73] mt-3">
+          Tap a zone to select it as your start, then tap another to find a route.
+        </p>
+      )}
 
-      {/* Route Panel (bottom sheet) */}
+      {/* Route Panel */}
       {activeRoute && activeRoute.steps.length > 0 && (
-        <div className="absolute bottom-4 left-0 w-full px-4 z-40">
+        <div className="mt-4">
           <div className="bg-white/95 backdrop-blur-xl rounded-xl p-4 shadow-[0_4px_24px_rgba(0,0,0,0.12)] border border-[#bec9c1]/30 flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold text-[#1c1b1b]">
@@ -196,7 +229,7 @@ export function StadiumMap({
 
             <div className="flex flex-col gap-2 relative">
               <div className="absolute left-[11px] top-6 bottom-6 w-0.5 bg-[#bec9c1]/50" />
-              {activeRoute.steps.slice(0, 3).map((step, i) => (
+              {activeRoute.steps.slice(0, 5).map((step, i) => (
                 <div key={`step-${i}`} className="flex items-start gap-4 relative z-10">
                   <div className={`w-6 h-6 rounded-full bg-white border-2 ${i === 0 ? 'border-[#00543b]' : 'border-[#bec9c1]'} flex items-center justify-center shrink-0 mt-0.5`}>
                     {i === 0 ? <span className="w-2 h-2 rounded-full bg-[#00543b]" /> : <span className="material-symbols-outlined text-[14px] text-[#bec9c1]">turn_left</span>}

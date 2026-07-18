@@ -138,13 +138,52 @@ function App() {
       )}
 
       {currentView === AppView.PROFILE && (
-        <div className="pt-20 pb-24 px-4 text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-[#00543b] to-[#0b6e4f] flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg">
-            G
+        <main className="pt-20 pb-24 px-4 md:px-12 max-w-2xl mx-auto w-full" style={{ fontFamily: 'Inter, sans-serif' }}>
+          <div className="text-center mb-8">
+            <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-[#00543b] to-[#0b6e4f] flex items-center justify-center text-white text-3xl font-bold mb-4 shadow-lg">
+              G
+            </div>
+            <h2 className="text-2xl font-bold text-[#1c1b1b]">Guest Fan</h2>
+            <p className="text-base text-[#3f4943] mt-1">FIFA World Cup 2026 attendee</p>
           </div>
-          <h2 className="text-2xl font-bold text-[#1c1b1b]">Guest Fan</h2>
-          <p className="text-base text-[#3f4943] mt-1">FIFA World Cup 2026 attendee</p>
-        </div>
+
+          <div className="space-y-3">
+            <button
+              onClick={() => setCurrentView(AppView.ACCESSIBILITY)}
+              className="w-full flex items-center gap-4 p-4 bg-[#F8F9FA] rounded-xl border border-[#bec9c1]/30 shadow-sm hover:bg-white transition-colors text-left min-h-[56px]"
+            >
+              <span className="material-symbols-outlined text-[#00543b]">accessibility_new</span>
+              <span className="text-base font-medium text-[#1c1b1b]">Accessibility Settings</span>
+              <span className="material-symbols-outlined text-[#6f7a73] ml-auto">chevron_right</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentView(AppView.DASHBOARD)}
+              className="w-full flex items-center gap-4 p-4 bg-[#F8F9FA] rounded-xl border border-[#bec9c1]/30 shadow-sm hover:bg-white transition-colors text-left min-h-[56px]"
+            >
+              <span className="material-symbols-outlined text-[#00543b]">language</span>
+              <span className="text-base font-medium text-[#1c1b1b]">Change Language</span>
+              <span className="material-symbols-outlined text-[#6f7a73] ml-auto">chevron_right</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentView(AppView.MAP)}
+              className="w-full flex items-center gap-4 p-4 bg-[#F8F9FA] rounded-xl border border-[#bec9c1]/30 shadow-sm hover:bg-white transition-colors text-left min-h-[56px]"
+            >
+              <span className="material-symbols-outlined text-[#00543b]">map</span>
+              <span className="text-base font-medium text-[#1c1b1b]">Stadium Map</span>
+              <span className="material-symbols-outlined text-[#6f7a73] ml-auto">chevron_right</span>
+            </button>
+
+            <button
+              onClick={() => setCurrentView(AppView.ONBOARDING)}
+              className="w-full flex items-center gap-4 p-4 bg-[#ffdad6] rounded-xl border border-[#ba1a1a]/20 shadow-sm hover:bg-[#ffc8c2] transition-colors text-left min-h-[56px] mt-6"
+            >
+              <span className="material-symbols-outlined text-[#ba1a1a]">logout</span>
+              <span className="text-base font-medium text-[#ba1a1a]">Sign Out</span>
+            </button>
+          </div>
+        </main>
       )}
 
       <BottomNav activeView={currentView} onNavigate={handleNavigate} />
