@@ -50,5 +50,9 @@ FanFlow26 is a production-grade, highly optimized, and accessible GenAI Stadium 
 - **Styling**: Tailwind CSS v4 paired with standard CSS variables for seamless light/dark and high-contrast toggles.
 - **Localization**: Built-in support for EN/ES/FR/PT via `i18next`.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ---
 *Developed for the GenAI hackathon challenge targeting a 98+ score in Code Quality, Security, Problem Statement, and Efficiency.*

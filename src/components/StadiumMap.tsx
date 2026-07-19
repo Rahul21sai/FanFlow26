@@ -4,7 +4,7 @@
  * Replaces Google Maps with a free, testable SVG implementation.
  */
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CrowdData, Route } from '../types';
 import { FacilityType } from '../types';
@@ -42,7 +42,7 @@ export function StadiumMap({
   const [hoveredZone, setHoveredZone] = useState<string | null>(null);
   const [selectedZone, setSelectedZone] = useState<string | null>(null);
 
-  const getDensityFill = (zoneId: string): string => {
+  const getDensityFill = useCallback((zoneId: string): string => {
     const data = crowdData.get(zoneId);
     if (!data) return 'rgba(159, 244, 204, 0.3)';
     const p = data.percentage;
@@ -50,9 +50,11 @@ export function StadiumMap({
     if (p <= 70) return 'rgba(255, 193, 7, 0.4)';
     if (p <= 90) return 'rgba(220, 53, 69, 0.45)';
     return 'rgba(186, 26, 26, 0.55)';
-  };
+  }, [crowdData]);
 
-  const routeZones = activeRoute ? new Set(activeRoute.steps.map((s) => s.zoneId)) : new Set<string>();
+  const routeZones = useMemo(() => {
+    return activeRoute ? new Set(activeRoute.steps.map((s) => s.zoneId)) : new Set<string>();
+  }, [activeRoute]);
 
   const handleZoneClick = (zoneId: string) => {
     setSelectedZone(zoneId);

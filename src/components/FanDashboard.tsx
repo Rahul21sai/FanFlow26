@@ -3,10 +3,13 @@
  * Matches the Stitch "Fan Dashboard" screen design.
  */
 
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { CrowdData } from '../types';
 import { AppView } from '../types';
 import { getDensityLabel, getDensityBgColor, getDensityFromPercentage } from '../utils/density';
+import { TransportWidget } from './TransportWidget';
+import { SustainabilityKPI } from './SustainabilityKPI';
 
 /** Props for the FanDashboard component. */
 export interface FanDashboardProps {
@@ -26,22 +29,30 @@ export interface FanDashboardProps {
 export function FanDashboard({ crowdData, onNavigate }: FanDashboardProps) {
   const { t } = useTranslation();
 
-  // Calculate overall crowd density
-  const allPercentages = Array.from(crowdData.values())
-    .filter((d) => d.percentage > 0)
-    .map((d) => d.percentage);
-  const avgPercentage = allPercentages.length > 0
-    ? Math.round(allPercentages.reduce((a, b) => a + b, 0) / allPercentages.length)
-    : 60;
-  const overallDensity = getDensityFromPercentage(avgPercentage);
+  // Calculate overall crowd density (memoized to prevent recalculation on every render)
+  const { avgPercentage, overallDensity } = useMemo(() => {
+    const allPercentages = Array.from(crowdData.values())
+      .filter((d) => d.percentage > 0)
+      .map((d) => d.percentage);
+    
+    const avg = allPercentages.length > 0
+      ? Math.round(allPercentages.reduce((a, b) => a + b, 0) / allPercentages.length)
+      : 60;
+      
+    return {
+      avgPercentage: avg,
+      overallDensity: getDensityFromPercentage(avg)
+    };
+  }, [crowdData]);
 
-  const quickActions = [
+  // Memoize quick actions to prevent re-creation
+  const quickActions = useMemo(() => [
     { id: 'navigate', icon: 'navigation', label: t('dashboard.navigate'), view: AppView.MAP, primary: true },
     { id: 'assistant', icon: 'smart_toy', label: t('dashboard.askAssistant'), view: AppView.ASSISTANT, primary: false },
     { id: 'facilities', icon: 'wc', label: t('dashboard.facilities'), view: AppView.MAP, primary: false },
     { id: 'seat', icon: 'event_seat', label: t('dashboard.mySeat'), view: AppView.MAP, primary: false },
     { id: 'accessibility', icon: 'accessible', label: t('dashboard.accessibility'), view: AppView.ACCESSIBILITY, primary: false },
-  ];
+  ], [t]);
 
   return (
     <main className="flex-grow px-4 md:px-12 py-6 space-y-6 max-w-[1200px] mx-auto w-full pt-20 pb-24" style={{ fontFamily: 'Inter, sans-serif' }}>
@@ -114,6 +125,10 @@ export function FanDashboard({ crowdData, onNavigate }: FanDashboardProps) {
           ))}
         </div>
       </section>
+
+      {/* New Widgets */}
+      <TransportWidget />
+      <SustainabilityKPI />
 
       {/* Promotions */}
       <section className="mt-6">
