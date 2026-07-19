@@ -7,6 +7,10 @@ interface AppContextType {
   accessibilitySettings: AccessibilitySettings;
   setAccessibilitySettings: (settings: AccessibilitySettings) => void;
   toggleAccessibilitySetting: (key: keyof AccessibilitySettings) => void;
+  selectedStadium: string;
+  setSelectedStadium: (stadium: string) => void;
+  selectedRole: string;
+  setSelectedRole: (role: string) => void;
 }
 
 const defaultAccessibilitySettings: AccessibilitySettings = {
@@ -21,6 +25,8 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 export function AppProvider({ children }: { children: ReactNode }) {
   const [currentView, setCurrentView] = useState<AppView>(AppView.ONBOARDING);
   const [accessibilitySettings, setAccessibilitySettings] = useState<AccessibilitySettings>(defaultAccessibilitySettings);
+  const [selectedStadium, setSelectedStadium] = useState<string>('azteca');
+  const [selectedRole, setSelectedRole] = useState<string>('fan');
 
   const toggleAccessibilitySetting = useCallback((key: keyof AccessibilitySettings) => {
     setAccessibilitySettings((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -32,6 +38,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     accessibilitySettings,
     setAccessibilitySettings,
     toggleAccessibilitySetting,
+    selectedStadium,
+    setSelectedStadium,
+    selectedRole,
+    setSelectedRole,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

@@ -6,17 +6,17 @@
 import React, { useState, useCallback, Suspense } from 'react';
 import { AppView } from './types';
 import { useGemini, useCrowdData, useRouting } from './hooks';
-import { AppHeader, BottomNav } from './components';
+import { AppHeader, BottomNav } from './components/Layout';
 import { useAppContext } from './context/AppContext';
 import { useTranslation } from 'react-i18next';
 
 // Lazy loaded components for better efficiency
-const OnboardingScreen = React.lazy(() => import('./components').then(m => ({ default: m.OnboardingScreen })));
-const FanDashboard = React.lazy(() => import('./components').then(m => ({ default: m.FanDashboard })));
-const StadiumMap = React.lazy(() => import('./components').then(m => ({ default: m.StadiumMap })));
-const ChatAssistant = React.lazy(() => import('./components').then(m => ({ default: m.ChatAssistant })));
-const OpsDashboard = React.lazy(() => import('./components').then(m => ({ default: m.OpsDashboard })));
-const AccessibilitySettingsScreen = React.lazy(() => import('./components').then(m => ({ default: m.AccessibilitySettingsScreen })));
+const OnboardingScreen = React.lazy(() => import('./components/OnboardingScreen').then(m => ({ default: m.OnboardingScreen })));
+const FanDashboard = React.lazy(() => import('./components/FanDashboard').then(m => ({ default: m.FanDashboard })));
+const StadiumMap = React.lazy(() => import('./components/StadiumMap').then(m => ({ default: m.StadiumMap })));
+const ChatAssistant = React.lazy(() => import('./components/ChatAssistant').then(m => ({ default: m.ChatAssistant })));
+const OpsDashboard = React.lazy(() => import('./components/OpsDashboard').then(m => ({ default: m.OpsDashboard })));
+const AccessibilitySettingsScreen = React.lazy(() => import('./components/AccessibilitySettings').then(m => ({ default: m.AccessibilitySettingsScreen })));
 
 // Loading fallback
 const LoadingSpinner = () => (
@@ -32,12 +32,21 @@ const LoadingSpinner = () => (
  * @returns The rendered application
  */
 function App() {
-  const { currentView, setCurrentView, accessibilitySettings, toggleAccessibilitySetting } = useAppContext();
+  const { currentView, setCurrentView, accessibilitySettings, toggleAccessibilitySetting, selectedRole } = useAppContext();
   const { i18n } = useTranslation();
+
+  // Automatically switch views based on selected role
+  React.useEffect(() => {
+    if (selectedRole === 'operations' || selectedRole === 'volunteer') {
+      setCurrentView(AppView.OPS);
+    } else if (selectedRole === 'fan') {
+      setCurrentView(AppView.DASHBOARD);
+    }
+  }, [selectedRole, setCurrentView]);
 
   // Custom hooks
   const { crowdData } = useCrowdData();
-  const { messages, isLoading, error, sendMessage } = useGemini('en');
+  const { messages, isLoading, error, sendMessage } = useGemini(i18n.language as never);
   const { activeRoute, calculateRoute, findNearest, clearRoute } = useRouting(
     crowdData,
     accessibilitySettings.wheelchairRouting
@@ -124,7 +133,7 @@ function App() {
             messages={messages}
             isLoading={isLoading}
             error={error}
-            onSendMessage={sendMessage}
+            onSendMessage={(msg) => sendMessage(msg, crowdData)}
           />
         )}
 

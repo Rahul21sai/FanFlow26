@@ -10,6 +10,8 @@ import { AppView } from '../types';
 import { getDensityLabel, getDensityBgColor, getDensityFromPercentage } from '../utils/density';
 import { TransportWidget } from './TransportWidget';
 import { SustainabilityKPI } from './SustainabilityKPI';
+import { useAppContext } from '../context/AppContext';
+import { STADIUMS } from '../data/stadiums';
 
 /** Props for the FanDashboard component. */
 export interface FanDashboardProps {
@@ -28,6 +30,8 @@ export interface FanDashboardProps {
  */
 export function FanDashboard({ crowdData, onNavigate }: FanDashboardProps) {
   const { t } = useTranslation();
+  const { selectedStadium } = useAppContext();
+  const activeStadium = STADIUMS[selectedStadium] || STADIUMS.azteca;
 
   // Calculate overall crowd density (memoized to prevent recalculation on every render)
   const { avgPercentage, overallDensity } = useMemo(() => {
@@ -72,20 +76,24 @@ export function FanDashboard({ crowdData, onNavigate }: FanDashboardProps) {
               {t('dashboard.liveUpcoming')}
             </span>
             <div className="text-right">
-              <p className="text-sm font-semibold text-[#1c1b1b]">Estadio Azteca</p>
-              <p className="text-base text-[#3f4943]">{t('dashboard.kickoff')} 18:00</p>
+              <p className="text-sm font-semibold text-[#1c1b1b]">{activeStadium.name}</p>
+              <p className="text-base text-[#3f4943]">{t('dashboard.kickoff')} {activeStadium.match.kickoff}</p>
             </div>
           </div>
 
           <div className="flex items-center justify-between py-4">
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">A</div>
-              <span className="text-2xl font-semibold text-[#1c1b1b]">Team A</span>
+              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${activeStadium.match.teams.teamA.colorFrom} ${activeStadium.match.teams.teamA.colorTo} flex items-center justify-center text-white font-bold text-lg shadow-sm`}>
+                {activeStadium.match.teams.teamA.letter}
+              </div>
+              <span className="text-2xl font-semibold text-[#1c1b1b]">{activeStadium.match.teams.teamA.name}</span>
             </div>
             <div className="text-5xl font-bold text-[#3f4943] opacity-30">{t('dashboard.vs')}</div>
             <div className="flex flex-col items-center gap-2">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center text-white font-bold text-lg shadow-sm">B</div>
-              <span className="text-2xl font-semibold text-[#1c1b1b]">Team B</span>
+              <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${activeStadium.match.teams.teamB.colorFrom} ${activeStadium.match.teams.teamB.colorTo} flex items-center justify-center text-white font-bold text-lg shadow-sm`}>
+                {activeStadium.match.teams.teamB.letter}
+              </div>
+              <span className="text-2xl font-semibold text-[#1c1b1b]">{activeStadium.match.teams.teamB.name}</span>
             </div>
           </div>
 

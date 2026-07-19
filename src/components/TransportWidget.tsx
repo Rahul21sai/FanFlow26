@@ -1,4 +1,9 @@
+import { useAppContext } from '../context/AppContext';
+import { STADIUMS } from '../data/stadiums';
+
 export function TransportWidget() {
+  const { selectedStadium } = useAppContext();
+  const activeStadium = STADIUMS[selectedStadium] || STADIUMS.azteca;
 
   return (
     <section className="mt-6">
@@ -12,8 +17,8 @@ export function TransportWidget() {
               <span className="material-symbols-outlined">train</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1c1b1b]">Metro Line 1</p>
-              <p className="text-xs text-[#3f4943]">Arriving in 3 min</p>
+              <p className="text-sm font-semibold text-[#1c1b1b]">{activeStadium.transport.line}</p>
+              <p className="text-xs text-[#3f4943]">Arriving in {activeStadium.transport.travelTimeMin} min</p>
             </div>
           </div>
           <span className="px-2 py-1 rounded bg-[#e8f5e9] text-[#2e7d32] text-xs font-semibold">On Time</span>
@@ -26,8 +31,8 @@ export function TransportWidget() {
               <span className="material-symbols-outlined">directions_bus</span>
             </div>
             <div>
-              <p className="text-sm font-semibold text-[#1c1b1b]">Shuttle Bus A</p>
-              <p className="text-xs text-[#3f4943]">Next departure in 12 min</p>
+              <p className="text-sm font-semibold text-[#1c1b1b]">{activeStadium.transport.busRoute}</p>
+              <p className="text-xs text-[#3f4943]">Next departure in {activeStadium.transport.shuttleFreq} min</p>
             </div>
           </div>
           <span className="px-2 py-1 rounded bg-[#fff3e0] text-[#ef6c00] text-xs font-semibold">Delayed</span>

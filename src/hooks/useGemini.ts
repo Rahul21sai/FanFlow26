@@ -3,12 +3,14 @@
  */
 
 import { useState, useCallback, useRef } from 'react';
-import type { ChatMessage, SupportedLanguage } from '../types';
+import type { ChatMessage, SupportedLanguage, CrowdData } from '../types';
 import { MessageRole } from '../types';
 import { askGemini, toGeminiHistory } from '../services';
 import { validateChatMessage } from '../utils';
 import { generateId } from '../utils/format';
 import { MAX_CHAT_HISTORY } from '../constants';
+import { useAppContext } from '../context/AppContext';
+import { STADIUMS } from '../data/stadiums';
 
 /** Return type for the useGemini hook. */
 export interface UseGeminiReturn {
@@ -19,7 +21,7 @@ export interface UseGeminiReturn {
   /** Current error message, if any. */
   readonly error: string | null;
   /** Send a message to the assistant. */
-  readonly sendMessage: (prompt: string) => Promise<void>;
+  readonly sendMessage: (prompt: string, crowdData?: ReadonlyMap<string, CrowdData>) => Promise<void>;
   /** Clear all chat history. */
   readonly clearHistory: () => void;
 }
@@ -37,8 +39,9 @@ export function useGemini(language: SupportedLanguage = 'en'): UseGeminiReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const { selectedStadium, accessibilitySettings } = useAppContext();
 
-  const sendMessage = useCallback(async (prompt: string) => {
+  const sendMessage = useCallback(async (prompt: string, crowdData?: ReadonlyMap<string, CrowdData>) => {
     // Validate input
     const validation = validateChatMessage(prompt);
     if (!validation.isValid) {
@@ -68,13 +71,44 @@ export function useGemini(language: SupportedLanguage = 'en'): UseGeminiReturn {
     setError(null);
 
     try {
+      // Build grounding context from active stadium and live settings
+      const activeStadium = STADIUMS[selectedStadium] || STADIUMS.azteca;
+      const a11yList = Object.entries(accessibilitySettings)
+        .filter(([_, enabled]) => enabled)
+        .map(([key]) => key)
+        .join(', ');
+
+      let crowdInfo = '';
+      if (crowdData) {
+        const list: string[] = [];
+        crowdData.forEach((d, zoneId) => {
+          list.push(`${zoneId}: ${d.density} (${d.percentage}% full)`);
+        });
+        crowdInfo = list.join(', ');
+      }
+
+      const groundingPrompt = `
+[LIVE STADIUM GROUNDING CONTEXT]
+Active Stadium: ${activeStadium.name} in ${activeStadium.city}, ${activeStadium.country}. Capacity: ${activeStadium.capacity}.
+Match Today: ${activeStadium.match.teams.teamA.name} vs ${activeStadium.match.teams.teamB.name} (Kickoff at ${activeStadium.match.kickoff}).
+Accessible Entrances: ${activeStadium.accessibility.stepFreeEntrances.join(', ')}.
+Elevators Available: ${activeStadium.accessibility.elevators}.
+Wheelchair Spaces: ${activeStadium.accessibility.wheelchairSpaces}.
+Transit lines and status: Metro Line: ${activeStadium.transport.line} (arrives in ${activeStadium.transport.travelTimeMin} mins), Bus Route: ${activeStadium.transport.busRoute} (departs in ${activeStadium.transport.shuttleFreq} mins).
+Sustainability KPIs: LEED certification level: ${activeStadium.sustainability.certification}, Renewable energy percentage: ${activeStadium.sustainability.renewableEnergyPercent}%, Solar panels: ${activeStadium.sustainability.solarPanels}, EV charging stations: ${activeStadium.sustainability.evStations}, Water recycled: ${activeStadium.sustainability.waterRecyclingPercent}%, Waste diverted: ${activeStadium.sustainability.wasteRecyclingPercent}%.
+User accessibility needs activated: ${a11yList || 'None'}.
+Live crowd density per zone: ${crowdInfo || 'No live data available'}.
+
+User Query: ${validation.sanitizedValue}
+`;
+
       // Convert history for Gemini
       const history = toGeminiHistory(
         messages.map((m) => ({ role: m.role, content: m.content }))
       );
 
       const result = await askGemini(
-        validation.sanitizedValue,
+        groundingPrompt,
         history,
         controller.signal
       );
@@ -105,7 +139,7 @@ export function useGemini(language: SupportedLanguage = 'en'): UseGeminiReturn {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, language]);
+  }, [messages, language, selectedStadium, accessibilitySettings]);
 
   const clearHistory = useCallback(() => {
     if (abortControllerRef.current) {
